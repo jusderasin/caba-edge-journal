@@ -1,46 +1,23 @@
 # Caba Edge Journal
 
-Journal des trades NQ/MNQ exécutés sur les gameplans Caba Express+.
-Site statique (HTML/CSS/JS) + Supabase. Accès privé : seul le compte propriétaire peut lire ou écrire (RLS, fonction `public.is_owner()`).
+Journal des trades NQ/MNQ exécutés sur les gameplans Caba Express+, avec les gameplans de session et la recherche à côté.
+Site statique (HTML/CSS/JS) + Supabase. Accès privé : seul le compte propriétaire lit ou écrit (RLS, `public.is_owner()`).
+
+**Règles de travail pour les agents (Claude, Codex) : voir [`AGENTS.md`](AGENTS.md).**
 
 - Supabase : projet `caba-edge-journal` (ref `trtfsqkrpyixrnxrfpzk`, eu-west-3)
-- Table : `public.trades` · Bucket captures : `shots` (privé)
+- Tables : `trades`, `plans`, `research_results`, `gex_snapshots` · Bucket fichiers : `shots` (privé)
 - Config front : `config.js` (clé publishable, sans danger côté navigateur)
 
+## Le site
+- **Journal** : KPI réels, courbe R cumulé, split par session, attribution (level, score, plan, entrée, régime), registre des trades avec captures, PDF et fichiers.
+- **Sessions** : un gameplan par session (HTML Caba Express+ lisible dans le site, XML DeepCharts, PDF, captures) et les trades qui s'y rattachent.
+- **Recherche** : résultats de replay/backtest (`research_results`) et archive GEX pré-session (`gex_snapshots`). Jamais mélangés aux KPI réels.
+
 ## Déploiement
-Vercel → Import du repo → Framework "Other", aucune commande de build, dossier racine. C'est tout.
-Dans Supabase → Authentication → URL Configuration : mettre l'URL Vercel en **Site URL** et dans **Redirect URLs**.
+Vercel → projet relié au repo, framework "Other", pas de build. Chaque push sur `main` redéploie.
+Supabase → Authentication → URL Configuration : URL Vercel en **Site URL** et **Redirect URLs**.
 
-## Ajouter un trade (Claude, Codex, script)
-Le R est calculé par la page : `(sortie − entrée) ÷ |entrée − stop|`, signé selon la direction. Ne jamais stocker le R à la main, ne jamais inventer un prix : si une donnée manque, demander à Erwann.
-
-`id` = `YYYY-MM-DD-<Session>-<n>` (ex. `2026-09-30-London-1`).
-
-```sql
-insert into public.trades (id, date, time_guyane, session, status, instrument, contracts,
-  plan_source, scenario, direction, entry_type, entry_level, entry_price,
-  sl_level, sl_price, tp_level, tp_price, exit_price, exit_reason,
-  mfe_pts, mae_pts, setup_score, gex_regime, cvd, plan_respected, notes, lessons)
-values ('2026-09-30-London-1', '2026-09-30', '03:42', 'London', 'trade', 'MNQ', 2,
-  'MenthorQ', 'S1 — rebond PS 0DTE', 'long', 'principale', 'PS 0DTE', 24850.25,
-  'sous swing', 24830, 'HVL', 24910, 24905.5, 'TP',
-  62, 9, 3, 'positive', 'divergence haussière', true, 'déroulé…', 'leçon…');
-```
-
-Session sans trade : `status = 'no_trade'`, remplir `date`, `session`, `lessons` (pourquoi).
-
-| champ | valeurs |
-|---|---|
-| session | `Asian` · `London` · `NY` |
-| status | `trade` · `no_trade` |
-| direction | `long` · `short` |
-| entry_type | `principale` · `secondaire` |
-| plan_source | `Caba` · `MenthorQ` · `Quin` |
-| exit_reason | `TP` · `SL` · `BE` · `trail` · `manuel` |
-| gex_regime | `positive` · `negative` |
-| setup_score | 0 à 4 |
-| image_path | chemin du fichier dans le bucket `shots` |
-
-### Accès pour Codex / scripts
-- Via SQL : Supabase MCP (`execute_sql`) ou l'éditeur SQL du dashboard.
-- Via API : clé **service_role** (Dashboard → Settings → API) dans une variable d'env locale. Ne jamais la commiter ni la mettre dans `config.js`.
+## Accès pour Codex / scripts
+- SQL : Supabase MCP (`execute_sql`) ou éditeur SQL du dashboard.
+- API : clé **service_role** dans une variable d'env locale uniquement. Jamais dans le repo ni dans `config.js`.
