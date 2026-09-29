@@ -109,6 +109,39 @@
     groupTable("byRegime", list, function (t) { return (t.gex_regime ? (t.gex_regime === "negative" ? "GEX −" : "GEX +") : "GEX ?") + " · " + (t.direction || "?"); });
   }
 
+  /* Recherche séparée du journal : les chiffres ci-dessous viennent du replay
+     DeepCharts + XML MenthorQ, et ne doivent jamais alimenter les KPI réels. */
+  function renderResearch() {
+    var el = $("research");
+    if (!el) return;
+    el.innerHTML =
+      '<div class="research-head">' +
+        '<div><div class="eyebrow">Research desk · mis à jour le 29/09/2026</div><h2 id="researchTitle">Données GEX mesurées</h2>' +
+        '<p>Historique de travail, isolé du registre personnel. Chaque ligne reste <b>low_n</b> : elle sert à cadrer une hypothèse, jamais à produire une probabilité ou une entrée automatique.</p></div>' +
+        '<span class="research-badge">EXPLORATOIRE</span>' +
+      '</div>' +
+      '<div class="research-kpis">' +
+        '<div><span>XML MenthorQ</span><b>31</b><small>journées · 18/08 → 28/09</small></div>' +
+        '<div><span>Setups rejoués</span><b>40</b><small>trades simulés uniques</small></div>' +
+        '<div><span>Régime GEX</span><b>?</b><small>Net GEX horodaté manquant</small></div>' +
+        '<div><span>Prix</span><b>NQ</b><small>ticks DeepCharts · minute</small></div>' +
+      '</div>' +
+      '<div class="research-grid">' +
+        '<div class="panel"><div class="kpi-l">Ce qui est testé</div><table><thead><tr><th>Setup</th><th class="r">n</th><th>Lecture</th></tr></thead><tbody>' +
+          '<tr><td>Cassure + retest</td><td class="r">22</td><td><span class="chip">low_n</span> continuation confirmée</td></tr>' +
+          '<tr><td>Fade + retest</td><td class="r">18</td><td><span class="chip">low_n</span> rejet confirmé</td></tr>' +
+          '<tr><td>Gestion BE / scale-out</td><td class="r">7 × 4</td><td>aucun réglage validé</td></tr>' +
+        '</tbody></table></div>' +
+        '<div class="panel"><div class="kpi-l">Règles du replay</div><ul class="research-list">' +
+          '<li>Entrée à ≤ 10 pts du level, après clôture 1 min et retest.</li>' +
+          '<li>T1 à au moins 0,8R ; time exit à 45 min sans T1 ; clôture en fin de session.</li>' +
+          '<li>Stop réel avant BE ; BE décalé à la bougie suivante ; 1 tick de slippage inclus.</li>' +
+        '</ul></div>' +
+        '<div class="panel"><div class="kpi-l">Décision opérationnelle</div><p class="research-copy">La gestion ne compense pas une entrée faible. Dans le plan réel, garder les 4 confirmations : level, clôture, retest tenu et contexte/CVD.</p><p class="research-copy muted">BE au T1 reste provisoire. Une archive XML ≥ 6 mois et un Net GEX publié avant chaque session sont nécessaires avant de qualifier un edge.</p></div>' +
+      '</div>' +
+      '<div class="research-source"><b>Sources :</b> XML MenthorQ / Caba, prix NQ DeepCharts, Quin utilisé pour la recherche EOD. Les données Quin sans horodatage pré-session ne servent pas à étiqueter le régime GEX.</div>';
+  }
+
   function row(label, v) { return v == null || v === "" ? "" : "<dt>" + label + "</dt><dd>" + v + "</dd>"; }
   function actions(t) {
     if (!state.canWrite) return "";
@@ -163,7 +196,7 @@
 
   function render() {
     var list = filtered();
-    renderKpis(list); renderCurve(list); renderAttribution(list); renderLedger(list);
+    renderKpis(list); renderResearch(); renderCurve(list); renderAttribution(list); renderLedger(list);
   }
 
   document.querySelectorAll(".filters button").forEach(function (b) {
