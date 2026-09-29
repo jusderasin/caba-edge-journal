@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0d1117">
+<meta name="robots" content="noindex, nofollow">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Caba Journal">
+<title>Caba Edge Journal</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230d1117'/%3E%3Cpath d='M5 22 L12 15 L17 19 L27 8' stroke='%23e3a43a' stroke-width='3' fill='none'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap login" id="login">
+  <div class="login-card">
+    <div class="eyebrow">NQ / MNQ · Caba Express+ · data réelle</div>
+    <h1>Caba Edge Journal</h1>
+    <p class="sub">Accès privé. Entre ton email, tu reçois un lien de connexion. Le téléphone reste connecté ensuite.</p>
+    <form id="loginForm" class="login-form" novalidate>
+      <div class="field"><label for="l-email">Email</label><input id="l-email" type="email" autocomplete="email" required></div>
+      <button type="submit" class="btn primary">Recevoir le lien</button>
+      <p class="msg" id="loginMsg" aria-live="polite"></p>
+    </form>
+  </div>
+</div>
+
+<div class="wrap" id="app" hidden>
+  <header>
+    <div>
+      <div class="eyebrow">NQ / MNQ · Caba Express+ · data réelle</div>
+      <h1>Caba Edge Journal</h1>
+      <p class="sub">Chaque trade exécuté sur un gameplan Caba : level d'entrée, level visé, stop, résultat en R. Les stats se recalculent à chaque trade ajouté.</p>
+    </div>
+    <div class="status-col"><div class="status"><span class="dot" id="dot"></span><span id="status">Connexion à la base…</span></div><div class="status"><span id="who"></span><button type="button" class="linkbtn" id="logoutBtn">Déconnexion</button></div></div>
+  </header>
+
+  <div class="toolbar">
+    <div class="filters" role="group" aria-label="Filtrer par session">
+      <button type="button" id="f-all" data-f="all" aria-pressed="true">Toutes sessions</button>
+      <button type="button" id="f-asian" data-f="Asian" aria-pressed="false">Asian</button>
+      <button type="button" id="f-london" data-f="London" aria-pressed="false">London</button>
+      <button type="button" id="f-ny" data-f="NY" aria-pressed="false">NY</button>
+    </div>
+    <button type="button" class="btn primary" id="addBtn" hidden>+ Ajouter un trade</button>
+  </div>
+
+  <form class="formpanel" id="tradeForm" hidden novalidate>
+    <div class="h2-row"><h2 id="formTitle" style="margin:0">Nouveau trade</h2><span class="preview" id="rPreview">R —</span></div>
+    <div class="fgroup"><div class="kpi-l">Session</div><div class="fgrid">
+      <div class="field"><label for="i-date">Date</label><input id="i-date" type="date" required></div>
+      <div class="field"><label for="i-time">Heure Guyane</label><input id="i-time" type="time"></div>
+      <div class="field"><label for="i-session">Session</label><select id="i-session"><option>Asian</option><option selected>London</option><option>NY</option></select></div>
+      <div class="field"><label for="i-status">Type</label><select id="i-status"><option value="trade">Trade</option><option value="no_trade">No trade</option></select></div>
+    </div></div>
+    <div class="fgroup" id="tradeFields"><div class="kpi-l">Setup</div><div class="fgrid">
+      <div class="field"><label for="i-direction">Direction</label><select id="i-direction"><option value="long">Long</option><option value="short">Short</option></select></div>
+      <div class="field"><label for="i-entrytype">Entrée</label><select id="i-entrytype"><option>principale</option><option>secondaire</option></select></div>
+      <div class="field"><label for="i-source">Source plan</label><select id="i-source"><option>MenthorQ</option><option>Caba</option><option>Quin</option></select></div>
+      <div class="field"><label for="i-instrument">Instrument × contrats</label><div style="display:flex;gap:6px"><select id="i-instrument" style="flex:1"><option>MNQ</option><option>NQ</option></select><input id="i-contracts" type="number" min="1" step="1" style="width:70px" aria-label="Contrats"></div></div>
+      <div class="field w2"><label for="i-scenario">Scénario</label><input id="i-scenario" placeholder="S2 — cassure HVL + retest"></div>
+      <div class="field"><label for="i-score">Score /4</label><select id="i-score"><option value="">—</option><option>0</option><option>1</option><option>2</option><option>3</option><option>4</option></select></div>
+      <div class="field"><label for="i-regime">Régime GEX</label><select id="i-regime"><option value="positive">Positif</option><option value="negative">Négatif</option></select></div>
+    </div>
+    <div class="kpi-l">Prix &amp; levels</div><div class="fgrid">
+      <div class="field"><label for="i-entry">Entrée</label><input id="i-entry" type="number" step="0.25" inputmode="decimal"></div>
+      <div class="field"><label for="i-entrylevel">Level d'entrée</label><input id="i-entrylevel" placeholder="HVL 30590"></div>
+      <div class="field"><label for="i-sl">Stop</label><input id="i-sl" type="number" step="0.25" inputmode="decimal"></div>
+      <div class="field"><label for="i-sllevel">Level du stop</label><input id="i-sllevel" placeholder="au-dessus GEX 1"></div>
+      <div class="field"><label for="i-tp">Target</label><input id="i-tp" type="number" step="0.25" inputmode="decimal"></div>
+      <div class="field"><label for="i-tplevel">Level target</label><input id="i-tplevel" placeholder="QQQ PS 0DTE"></div>
+      <div class="field"><label for="i-exit">Sortie réelle</label><input id="i-exit" type="number" step="0.25" inputmode="decimal"></div>
+      <div class="field"><label for="i-exitreason">Raison sortie</label><select id="i-exitreason"><option>TP</option><option>SL</option><option>BE</option><option>trail</option><option>manuel</option></select></div>
+      <div class="field"><label for="i-mfe">MFE (pts)</label><input id="i-mfe" type="number" step="0.25"></div>
+      <div class="field"><label for="i-mae">MAE (pts)</label><input id="i-mae" type="number" step="0.25"></div>
+      <div class="field"><label for="i-cvd">CVD</label><input id="i-cvd" placeholder="divergence haussière"></div>
+      <div class="field"><label for="i-plan">Plan respecté ?</label><select id="i-plan"><option value="yes">Oui</option><option value="no">Non</option></select></div>
+    </div></div>
+    <div class="fgroup"><div class="kpi-l">Notes</div><div class="fgrid">
+      <div class="field w4"><label for="i-notes">Déroulé</label><textarea id="i-notes"></textarea></div>
+      <div class="field w4"><label for="i-lessons">Leçon / pourquoi pas de trade</label><textarea id="i-lessons"></textarea></div>
+      <div class="field w4" id="imgField" hidden><label for="i-image">Capture (optionnel)</label><input id="i-image" type="file" accept="image/*"></div>
+    </div></div>
+    <div class="formfoot"><span class="msg" id="formMsg"></span><div style="display:flex;gap:8px"><button type="button" class="btn" id="cancelBtn">Annuler</button><button type="submit" class="btn primary" id="saveBtn">Enregistrer</button></div></div>
+  </form>
+
+  <section class="kpis" id="kpis" aria-label="Indicateurs clés"></section>
+  <div class="sample-warn" id="sampleWarn"></div>
+
+  <section class="panel">
+    <div class="h2-row"><h2>Courbe R cumulé</h2><span class="hint" id="curveHint"></span></div>
+    <svg class="chart" id="curve" viewBox="0 0 800 220" preserveAspectRatio="none" role="img" aria-label="R cumulé par trade"></svg>
+  </section>
+
+  <section>
+    <div class="h2-row"><h2>Attribution</h2><span class="hint">win rate · espérance en R · n</span></div>
+    <div class="grid3">
+      <div class="panel"><div class="kpi-l" style="margin-bottom:8px">Par session</div><div class="tbl-wrap" id="bySession"></div></div>
+      <div class="panel"><div class="kpi-l" style="margin-bottom:8px">Par level d'entrée</div><div class="tbl-wrap" id="byLevel"></div></div>
+      <div class="panel"><div class="kpi-l" style="margin-bottom:8px">Par score setup /4</div><div class="tbl-wrap" id="byScore"></div></div>
+      <div class="panel"><div class="kpi-l" style="margin-bottom:8px">Plan respecté ?</div><div class="tbl-wrap" id="byPlan"></div></div>
+      <div class="panel"><div class="kpi-l" style="margin-bottom:8px">Entrée principale vs secondaire</div><div class="tbl-wrap" id="byEntry"></div></div>
+      <div class="panel"><div class="kpi-l" style="margin-bottom:8px">Régime GEX · direction</div><div class="tbl-wrap" id="byRegime"></div></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="h2-row"><h2>Registre des trades</h2><span class="hint" id="ledgerHint"></span></div>
+    <div class="ledger" id="ledger"></div>
+  </section>
+
+  <footer>R = (sortie − entrée) ÷ |entrée − stop|, signé selon la direction. Espérance = moyenne des R. Profit factor = somme des R gagnants ÷ somme des R perdants. Un sample sous 30 trades reste du bruit. Pas un conseil financier.</footer>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="config.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
