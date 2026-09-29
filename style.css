@@ -158,3 +158,8 @@ footer { font-size: 12px; color: var(--dim); border-top: 1px solid var(--line); 
 .login-card { max-width: 440px; margin: 10vh auto 0; display: grid; gap: 14px; }
 .login-form { display: grid; gap: 12px; margin-top: 8px; }
 .login-form .msg { font-size: 13px; color: var(--muted); margin: 0; min-height: 1.5em; }
+
+.status .linkbtn + .linkbtn { margin-left: 10px; }
+.pwform { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; align-items: center; }
+.pwform input { font: 14px var(--font-body); color: var(--fg); background: var(--panel-2); border: 1px solid var(--line); border-radius: 6px; padding: 7px 10px; min-width: 0; width: 220px; max-width: 100%; }
+.pwform .msg { font-size: 12px; color: var(--muted); width: 100%; text-align: right; }

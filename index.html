@@ -21,7 +21,8 @@
     <p class="sub">Accès privé. Entre ton email, tu reçois un lien de connexion. Le téléphone reste connecté ensuite.</p>
     <form id="loginForm" class="login-form" novalidate>
       <div class="field"><label for="l-email">Email</label><input id="l-email" type="email" autocomplete="email" required></div>
-      <button type="submit" class="btn primary">Recevoir le lien</button>
+      <div class="field"><label for="l-pass">Mot de passe</label><input id="l-pass" type="password" autocomplete="current-password" placeholder="vide = recevoir un lien par email"></div>
+      <button type="submit" class="btn primary" id="loginBtn">Se connecter</button>
       <p class="msg" id="loginMsg" aria-live="polite"></p>
     </form>
   </div>
@@ -34,7 +35,8 @@
       <h1>Caba Edge Journal</h1>
       <p class="sub">Chaque trade exécuté sur un gameplan Caba : level d'entrée, level visé, stop, résultat en R. Les stats se recalculent à chaque trade ajouté.</p>
     </div>
-    <div class="status-col"><div class="status"><span class="dot" id="dot"></span><span id="status">Connexion à la base…</span></div><div class="status"><span id="who"></span><button type="button" class="linkbtn" id="logoutBtn">Déconnexion</button></div></div>
+    <div class="status-col"><div class="status"><span class="dot" id="dot"></span><span id="status">Connexion à la base…</span></div><div class="status"><span id="who"></span><button type="button" class="linkbtn" id="pwToggle">Mot de passe</button><button type="button" class="linkbtn" id="logoutBtn">Déconnexion</button></div>
+      <form class="pwform" id="pwForm" hidden novalidate><input id="pw-new" type="password" autocomplete="new-password" placeholder="Nouveau mot de passe (8+)" aria-label="Nouveau mot de passe"><button type="submit" class="btn">Enregistrer</button><span class="msg" id="pwMsg" aria-live="polite"></span></form></div>
   </header>
 
   <div class="toolbar">
