@@ -22,7 +22,7 @@ Données : Supabase projet `caba-edge-journal` (ref `trtfsqkrpyixrnxrfpzk`).
 | `research_results` | résultats de replay / backtest | identity ; `status` ∈ low_n, exploratoire, solide, rejeté |
 | `gex_snapshots` | GEX relevé **avant** la session, horodaté | identity ; `captured_at` doit précéder la session |
 
-Colonnes `trades` : date, time_guyane, session (Asian·London·NY), status (trade·no_trade), instrument, contracts, plan_source (Caba·MenthorQ·Quin), scenario, direction (long·short), entry_type (principale·secondaire), entry_level, entry_price, sl_level, sl_price, tp_level, tp_price, exit_price, exit_reason (TP·SL·BE·trail·manuel), mfe_pts, mae_pts, setup_score (0-4), gex_regime (positive·negative), cvd, plan_respected, notes, lessons, attachments, plan_id.
+Colonnes `trades` : date, time_guyane, session (Asian·London·NY), status (trade·no_trade), instrument, contracts, plan_source (Caba·MenthorQ·Quin), scenario, direction (long·short), entry_type (principale·secondaire), entry_level, entry_price, sl_level, sl_price (stop INITIAL, base du R), sl_moved_price (si le stop a été déplacé), tp_level, tp_price, exit_price, exit_reason (TP·SL·BE·SL déplacé·trail·manuel), mfe_pts, mae_pts, setup_score (0-4), gex_regime (positive·negative), cvd, plan_respected, notes, lessons, attachments, plan_id.
 
 `attachments` (trades et plans) = tableau JSON `[{ "path", "name", "type", "size" }]`, fichiers dans le bucket privé `shots`
 (`trades/<id>/…` ou `plans/<id>/…`). Les fichiers s'ajoutent depuis le site (un agent sans accès Storage ne peut pas uploader).
