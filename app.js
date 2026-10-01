@@ -213,7 +213,8 @@
     groupTable("byRegime", list, function (t) { return (t.gex_regime ? (t.gex_regime === "negative" ? "GEX −" : "GEX +") : "GEX ?") + " · " + (t.direction || "?"); });
     var planned = state.plans.filter(function (p) { return state.filter === "all" || p.session === state.filter; }).length;
     var noTrade = list.filter(function (t) { return t.status === "no_trade"; }).length;
-    $("discipline").innerHTML = "<div><b>" + planned + "</b><span>sessions avec gameplan</span></div><div><b>" + noTrade + "</b><span>no-trade logués</span></div>";
+    var moved = list.filter(function (t) { return t.sl_moved_price != null; }).length;
+    $("discipline").innerHTML = "<div><b>" + planned + "</b><span>sessions avec gameplan</span></div><div><b>" + noTrade + "</b><span>no-trade logués</span></div><div><b>" + moved + "</b><span>stops déplacés</span></div>";
   }
 
   function row(label, v) { return v == null || v === "" ? "" : "<dt>" + label + "</dt><dd>" + v + "</dd>"; }
@@ -252,6 +253,7 @@
         row("Scénario", esc(t.scenario)) +
         row("Entrée", '<span class="mono">' + esc(t.entry_price) + "</span> · " + esc(t.entry_level) + (t.entry_type ? ' <span class="chip">' + esc(t.entry_type) + "</span>" : "")) +
         row("Stop", '<span class="mono">' + esc(t.sl_price) + "</span>" + (t.sl_level ? " · " + esc(t.sl_level) : "") + (t.entry_price != null && t.sl_price != null ? " · " + Math.abs(t.entry_price - t.sl_price).toFixed(2) + " pts" : "")) +
+        row("Stop déplacé", t.sl_moved_price == null ? "" : '<span class="mono">' + esc(t.sl_moved_price) + '</span> <span class="chip">pendant le trade</span>') +
         row("Target", '<span class="mono">' + esc(t.tp_price) + "</span> · " + esc(t.tp_level)) +
         row("R:R prévu", rr == null ? "" : "1:" + rr.toFixed(2)) +
         row("Sortie", '<span class="mono">' + esc(t.exit_price) + "</span>" + (t.exit_reason ? " · " + esc(t.exit_reason) : "")) +
@@ -387,7 +389,7 @@
     setVal("i-date", t.date); setVal("i-time", t.time_guyane); setVal("i-session", t.session); setVal("i-status", t.status || "trade");
     setVal("i-direction", t.direction || "long"); setVal("i-entrytype", t.entry_type || "principale"); setVal("i-source", t.plan_source || "MenthorQ");
     setVal("i-contracts", t.contracts); setVal("i-scenario", t.scenario); setVal("i-score", t.setup_score == null ? "" : String(t.setup_score)); setVal("i-regime", t.gex_regime || "positive");
-    setVal("i-entry", t.entry_price); setVal("i-entrylevel", t.entry_level); setVal("i-sl", t.sl_price); setVal("i-sllevel", t.sl_level);
+    setVal("i-entry", t.entry_price); setVal("i-entrylevel", t.entry_level); setVal("i-sl", t.sl_price); setVal("i-sllevel", t.sl_level); setVal("i-slmoved", t.sl_moved_price);
     setVal("i-tp", t.tp_price); setVal("i-tplevel", t.tp_level); setVal("i-exit", t.exit_price); setVal("i-exitreason", t.exit_reason || "TP");
     setVal("i-mfe", t.mfe_pts); setVal("i-mae", t.mae_pts); setVal("i-cvd", t.cvd); setVal("i-respected", t.plan_respected === false ? "no" : "yes");
     setVal("i-notes", t.notes); setVal("i-lessons", t.lessons); $("i-files").value = "";
@@ -408,7 +410,7 @@
     var o = { date: date, time_guyane: txt("i-time"), session: session, status: nt ? "no_trade" : "trade", plan_id: $("i-plan").value || null, notes: txt("i-notes"), lessons: txt("i-lessons") };
     var T = { direction: $("i-direction").value, entry_type: $("i-entrytype").value, plan_source: $("i-source").value, instrument: "MNQ", contracts: num("i-contracts"), scenario: txt("i-scenario"),
       setup_score: $("i-score").value === "" ? null : +$("i-score").value, gex_regime: $("i-regime").value, entry_price: num("i-entry"), entry_level: txt("i-entrylevel"),
-      sl_price: num("i-sl"), sl_level: txt("i-sllevel"), tp_price: num("i-tp"), tp_level: txt("i-tplevel"), exit_price: num("i-exit"), exit_reason: $("i-exitreason").value,
+      sl_price: num("i-sl"), sl_level: txt("i-sllevel"), sl_moved_price: num("i-slmoved"), tp_price: num("i-tp"), tp_level: txt("i-tplevel"), exit_price: num("i-exit"), exit_reason: $("i-exitreason").value,
       mfe_pts: num("i-mfe"), mae_pts: num("i-mae"), cvd: txt("i-cvd"), plan_respected: $("i-respected").value === "yes" };
     Object.keys(T).forEach(function (k) { o[k] = nt ? null : T[k]; });
     var id = tctx.editing;
