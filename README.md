@@ -6,11 +6,13 @@ Site statique (HTML/CSS/JS) + Supabase. Accès privé : seul le compte propriét
 **Règles de travail pour les agents (Claude, Codex) : voir [`AGENTS.md`](AGENTS.md).**
 
 - Supabase : projet `caba-edge-journal` (ref `trtfsqkrpyixrnxrfpzk`, eu-west-3)
-- Tables : `trades`, `plans`, `research_results`, `gex_snapshots` · Bucket fichiers : `shots` (privé)
+- Tables : `trades`, `plans`, `bt_sessions`, `bt_trades`, `research_results`, `gex_snapshots` · Bucket fichiers : `shots` (privé)
 - Config front : `config.js` (clé publishable, sans danger côté navigateur)
 
 ## Le site
 - **Journal** : KPI réels, courbe R cumulé, split par session, attribution (level, score, plan, entrée, régime), registre des trades avec captures, PDF et fichiers.
+- **Journal (suite)** : discipline dans le plan vs hors plan + erreurs déclarées, distribution des R et séries, labo MFE/MAE avec simulateur BE, IC 95 % sur WR et espérance.
+- **Backtest** : sessions de replay et de paper trading, KPI séparés, courbe, comparaison live vs backtest par segment.
 - **Sessions** : un gameplan par session (HTML Caba Express+ lisible dans le site, XML DeepCharts, PDF, captures) et les trades qui s'y rattachent.
 - **Recherche** : résultats de replay/backtest (`research_results`) et archive GEX pré-session (`gex_snapshots`). Jamais mélangés aux KPI réels.
 

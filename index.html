@@ -38,6 +38,7 @@
       <nav class="tabs" aria-label="Sections">
         <a href="#journal" data-tab="journal" class="tab">Journal</a>
         <a href="#sessions" data-tab="sessions" class="tab">Sessions</a>
+        <a href="#backtest" data-tab="backtest" class="tab">Backtest</a>
         <a href="#recherche" data-tab="recherche" class="tab">Recherche</a>
       </nav>
       <div class="account">
@@ -88,6 +89,36 @@
         </section>
       </div>
 
+      <div class="grid-2">
+        <section class="panel">
+          <div class="h2-row"><h2>Discipline</h2><span class="hint">dans le plan vs hors plan</span></div>
+          <div id="planSplit"></div>
+          <div class="kpi-l sp">Erreurs d'exécution déclarées</div>
+          <div id="byTag"></div>
+        </section>
+        <section class="panel">
+          <div class="h2-row"><h2>Distribution des R</h2><span class="hint" id="distHint"></span></div>
+          <svg class="chart short" id="hist" viewBox="0 0 400 160" preserveAspectRatio="none" role="img" aria-label="Histogramme des R"></svg>
+          <div class="streaks" id="streaks"></div>
+        </section>
+      </div>
+
+      <section class="panel">
+        <div class="h2-row"><h2>Labo MFE / MAE</h2><span class="hint" id="labHint"></span></div>
+        <div class="lab-grid">
+          <div>
+            <div class="kpi-l">Chaleur vs potentiel (en R)</div>
+            <svg class="chart" id="scatter" viewBox="0 0 400 240" preserveAspectRatio="none" role="img" aria-label="MAE en R contre MFE en R"></svg>
+            <div class="legend"><span><i class="lg win"></i>gagnant</span><span><i class="lg loss"></i>perdant</span><span><i class="lg be"></i>BE</span><span class="muted">ligne = TP prévu</span></div>
+          </div>
+          <div>
+            <div class="kpi-l">Simulateur BE sur tes trades réels</div>
+            <div class="tbl-wrap" id="beSim"></div>
+            <p class="copy muted small-copy" id="beNote"></p>
+          </div>
+        </div>
+      </section>
+
       <details class="panel attrib" id="attribBox">
         <summary><h2>Attribution</h2><span class="hint">level · score · plan · entrée · régime</span></summary>
         <div class="attrib-grid">
@@ -112,6 +143,41 @@
         <button type="button" class="btn primary" id="addPlanBtn">+ Session</button>
       </div>
       <div class="plans" id="plans"></div>
+    </section>
+
+    <!-- ===== BACKTEST ===== -->
+    <section id="tab-backtest" class="tabpane" hidden>
+      <div class="toolbar">
+        <div class="filters" id="btFilters" role="group" aria-label="Filtrer le backtest">
+          <button type="button" data-bf="all" aria-pressed="true">Tout</button>
+          <button type="button" data-bf="replay" aria-pressed="false">Replay</button>
+          <button type="button" data-bf="paper" aria-pressed="false">Paper</button>
+          <span class="fsep" aria-hidden="true"></span>
+          <button type="button" data-bs="all" aria-pressed="true">Toutes</button>
+          <button type="button" data-bs="Asian" aria-pressed="false">Asian</button>
+          <button type="button" data-bs="London" aria-pressed="false">London</button>
+          <button type="button" data-bs="NY" aria-pressed="false">NY</button>
+        </div>
+        <button type="button" class="btn primary" id="addBtBtn">+ Session backtest</button>
+      </div>
+      <div class="notice"><b>Backtest ≠ journal.</b> Replay d'une date passée ou paper trading. Ces trades vivent dans leur propre table et n'entrent jamais dans les KPI réels.</div>
+      <section class="kpis" id="btKpis" aria-label="Indicateurs backtest"></section>
+      <div class="sample-warn" id="btWarn"></div>
+      <div class="grid-main">
+        <section class="panel">
+          <div class="h2-row"><h2>Courbe R backtest</h2><span class="hint" id="btCurveHint"></span></div>
+          <svg class="chart" id="btCurve" viewBox="0 0 800 220" preserveAspectRatio="none" role="img" aria-label="R cumulé backtest"></svg>
+        </section>
+        <section class="panel">
+          <div class="h2-row"><h2>Live vs Backtest</h2><span class="hint">espérance · n</span></div>
+          <div class="tbl-wrap" id="liveVsBt"></div>
+          <p class="copy muted small-copy">Écart = espérance live − espérance backtest. Négatif = ce que l'exécution réelle te coûte. Lisible seulement quand les deux côtés ont n ≥ 30.</p>
+        </section>
+      </div>
+      <section>
+        <div class="h2-row"><h2>Sessions de backtest</h2><span class="hint" id="btHint"></span></div>
+        <div class="plans" id="btSessions"></div>
+      </section>
     </section>
 
     <!-- ===== RECHERCHE ===== -->
@@ -184,6 +250,8 @@
           <div class="field"><label for="i-cvd">CVD</label><input id="i-cvd"></div>
           <div class="field"><label for="i-respected">Plan respecté ?</label><select id="i-respected"><option value="yes">Oui</option><option value="no">Non</option></select></div>
         </div>
+        <div class="fsec">Erreurs d'exécution <span class="preview">coche seulement ce qui s'est vraiment passé</span></div>
+        <div class="tagpick" id="i-tags"></div>
       </div>
       <div class="fsec">Notes</div>
       <div class="fgrid">
@@ -210,6 +278,50 @@
       <div class="attach-edit" id="planAtt"></div>
       <label class="dropzone" for="p-files"><input id="p-files" type="file" multiple accept="image/*,application/pdf,.pdf,.html,.htm,.xml,.json,.csv,.txt"><span>Gameplan HTML, XML DeepCharts, PDF, captures</span></label>
       <div class="formfoot"><span class="msg" id="planMsg"></span><div class="btns"><button type="button" class="btn" data-close>Annuler</button><button type="submit" class="btn primary" id="planSave">Enregistrer</button></div></div>
+    </form>
+
+    <!-- Session backtest -->
+    <form id="btSessForm" class="dform" novalidate hidden>
+      <div class="fgrid">
+        <div class="field"><label for="b-kind">Type</label><select id="b-kind"><option value="replay">Replay</option><option value="paper">Paper</option></select></div>
+        <div class="field"><label for="b-date">Date rejouée</label><input id="b-date" type="date"></div>
+        <div class="field"><label for="b-session">Session</label><select id="b-session"><option>Asian</option><option selected>London</option><option>NY</option></select></div>
+        <div class="field"><label for="b-source">Source plan</label><select id="b-source"><option value="">—</option><option>MenthorQ</option><option>Caba</option><option>Quin</option></select></div>
+        <div class="field w2"><label for="b-setup">Setup testé</label><input id="b-setup" placeholder="Fade cluster QQQ GEX"></div>
+        <div class="field"><label for="b-regime">Régime GEX</label><select id="b-regime"><option value="">—</option><option value="positive">Positif</option><option value="negative">Négatif</option></select></div>
+        <div class="field"><label for="b-plan">Gameplan lié</label><select id="b-plan"><option value="">— aucun —</option></select></div>
+        <div class="field w4"><label for="b-method">Règles du replay</label><textarea id="b-method" placeholder="Entrée ≤ 10 pts du level après clôture 1 min, BE +1.5R, TP 2R…"></textarea></div>
+        <div class="field w4"><label for="b-notes">Notes</label><textarea id="b-notes"></textarea></div>
+      </div>
+      <div class="fsec">Fichiers</div>
+      <div class="attach-edit" id="btAtt"></div>
+      <label class="dropzone" for="b-files"><input id="b-files" type="file" multiple accept="image/*,application/pdf,.pdf,.html,.htm,.xml,.json,.csv,.txt"><span>Captures du replay, XML, gameplan</span></label>
+      <div class="formfoot"><span class="msg" id="btSessMsg"></span><div class="btns"><button type="button" class="btn" data-close>Annuler</button><button type="submit" class="btn primary" id="btSessSave">Enregistrer</button></div></div>
+    </form>
+
+    <!-- Trade backtest -->
+    <form id="btTradeForm" class="dform" novalidate hidden>
+      <div class="fsec">Setup <span class="preview" id="btPreview">R —</span></div>
+      <div class="fgrid">
+        <div class="field"><label for="bt-time">Heure Guyane</label><input id="bt-time" type="time"></div>
+        <div class="field"><label for="bt-direction">Direction</label><select id="bt-direction"><option value="long">Long</option><option value="short">Short</option></select></div>
+        <div class="field"><label for="bt-entrytype">Entrée</label><select id="bt-entrytype"><option>principale</option><option>secondaire</option></select></div>
+        <div class="field"><label for="bt-score">Score /4</label><select id="bt-score"><option value="">—</option><option>0</option><option>1</option><option>2</option><option>3</option><option>4</option></select></div>
+        <div class="field w4"><label for="bt-scenario">Scénario</label><input id="bt-scenario"></div>
+        <div class="field"><label for="bt-entry">Entrée</label><input id="bt-entry" type="number" step="0.25" inputmode="decimal"></div>
+        <div class="field"><label for="bt-entrylevel">Level d'entrée</label><input id="bt-entrylevel"></div>
+        <div class="field"><label for="bt-sl">Stop initial</label><input id="bt-sl" type="number" step="0.25" inputmode="decimal"></div>
+        <div class="field"><label for="bt-sllevel">Level du stop</label><input id="bt-sllevel"></div>
+        <div class="field"><label for="bt-tp">Target</label><input id="bt-tp" type="number" step="0.25" inputmode="decimal"></div>
+        <div class="field"><label for="bt-tplevel">Level target</label><input id="bt-tplevel"></div>
+        <div class="field"><label for="bt-exit">Sortie</label><input id="bt-exit" type="number" step="0.25" inputmode="decimal"></div>
+        <div class="field"><label for="bt-exitreason">Raison sortie</label><select id="bt-exitreason"><option>TP</option><option>SL</option><option>BE</option><option>time exit</option><option>manuel</option></select></div>
+        <div class="field"><label for="bt-mfe">MFE (pts)</label><input id="bt-mfe" type="number" step="0.25"></div>
+        <div class="field"><label for="bt-mae">MAE (pts)</label><input id="bt-mae" type="number" step="0.25"></div>
+        <div class="field w2"><label for="bt-rules">Règles respectées ?</label><select id="bt-rules"><option value="yes">Oui</option><option value="no">Non</option></select></div>
+        <div class="field w4"><label for="bt-notes">Notes</label><textarea id="bt-notes"></textarea></div>
+      </div>
+      <div class="formfoot"><span class="msg" id="btTradeMsg"></span><div class="btns"><button type="button" class="btn" data-close>Annuler</button><button type="submit" class="btn primary" id="btTradeSave">Enregistrer</button></div></div>
     </form>
 
     <!-- Snapshot GEX -->
