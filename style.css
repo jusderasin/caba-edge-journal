@@ -289,23 +289,6 @@ tr.hl td { background: color-mix(in srgb, var(--accent) 9%, transparent); }
 .fsep { width: 1px; align-self: stretch; background: var(--line); margin: 2px 4px; }
 .chip.k-paper { color: var(--ny); border-color: color-mix(in srgb, var(--ny) 45%, transparent); }
 
-/* Research desk: the journal stays dense and factual, while the workspace reads like a live lab. */
-:root { --bg:#07080c; --panel:#101119; --panel-2:#181a25; --line:#292b3a; --fg:#f1eff8; --muted:#9a9bad; --dim:#666878; --accent:#9d7cff; --win:#54d7a4; --loss:#ff6868; }
-body { background: radial-gradient(ellipse 80% 42% at 70% -12%, #211743 0%, transparent 60%), var(--bg); }
-.topbar { background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(14px); }
-.brand-mark { background: var(--accent); box-shadow: 0 0 20px color-mix(in srgb, var(--accent) 75%, transparent); }
-.tabs { gap: 4px; }
-.tab { border: 1px solid transparent; font-family: var(--font-mono); font-size: 11px; letter-spacing: .04em; }
-.tab.active { background: #1c1930; border-color: #493b78; color: var(--fg); }
-.panel, .kpis, details.trade, .split, .notice { border-radius: 0; }
-.panel { background: linear-gradient(145deg, color-mix(in srgb, var(--panel) 96%, #271b48), var(--panel)); }
-.kpi-v, .split-v { letter-spacing: .025em; }
-.btn { border-radius: 2px; }
-.btn.primary { box-shadow: 0 0 18px color-mix(in srgb, var(--accent) 22%, transparent); }
-.tabpane > .toolbar:first-child:before { content:"EXECUTION PROTOCOL"; font: 10px var(--font-mono); letter-spacing:.12em; color:var(--accent); margin-right:auto; }
-.tabpane > .toolbar:first-child { border:1px solid #3a3160; padding:10px 12px; background:linear-gradient(100deg,#17122a,#0d0e15 65%); }
-.tabpane > .toolbar:first-child .filters { margin-left:0; }
-.research-table tr:hover td, .plans > *:hover { background:color-mix(in srgb,var(--accent) 7%, transparent); }
 .chip.k-replay { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 45%, transparent); }
 .icon-btn.sm { width: 28px; height: 28px; font-size: 13px; }
 .icon-btn.danger { color: var(--loss); }
@@ -313,3 +296,111 @@ body { background: radial-gradient(ellipse 80% 42% at 70% -12%, #211743 0%, tran
 .bt-table td { vertical-align: middle; }
 .bt-table td.r:last-child { white-space: nowrap; }
 @media (max-width: 480px) { .streaks { grid-template-columns: repeat(2, minmax(0, 1fr)); } .split-v { font-size: 26px; } }
+
+/* ============================================================
+   THÈME LAB — terminal noir, mono partout, filets fins, accent violet.
+   Inspiré "Ergodicity Lab" : panneaux carrés, titres mono capitales espacées,
+   cartes métriques encadrées, valeurs colorées, aucun dégradé décoratif.
+   ============================================================ */
+:root {
+  --bg: #000; --panel: #050507; --panel-2: #0c0c11; --line: #22222b; --line-2: #33333f;
+  --fg: #ececf2; --muted: #8a8a98; --dim: #5a5a66;
+  --accent: #8f7bff; --accent-bg: #1a1530;
+  --win: #4ade9c; --loss: #ff6b6b; --be: #8a8a98;
+  --asian: #e879b9; --london: #f0b44c; --ny: #5aa8f0;
+  --font-display: "JetBrains Mono", "IBM Plex Mono", ui-monospace, monospace;
+  --font-body: "JetBrains Mono", "IBM Plex Mono", ui-monospace, monospace;
+  --font-mono: "JetBrains Mono", "IBM Plex Mono", ui-monospace, monospace;
+  --topbar-h: 52px;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #f6f6f8; --panel: #fff; --panel-2: #f0f0f4; --line: #dcdce3; --line-2: #c6c6d0;
+    --fg: #111116; --muted: #5d5d6b; --dim: #8d8d99; --accent: #5b45e0; --accent-bg: #ece9ff;
+    --win: #138a5a; --loss: #c8312f; --be: #6b6b78; --asian: #a8467e; --london: #a8680c; --ny: #2c6fb3;
+  }
+}
+body { background: var(--bg); font-size: 13px; line-height: 1.6; letter-spacing: 0; }
+.wrap { gap: 16px; }
+
+/* Barre du haut : ▌ CABA EDGE LAB + onglets en boutons encadrés */
+.topbar { background: var(--bg); backdrop-filter: none; border-bottom: 1px solid var(--line); }
+.brand-mark { width: 4px; height: 18px; border-radius: 0; border: 0; background: var(--accent); box-shadow: none; }
+.brand-name { font-family: var(--font-mono); font-weight: 700; font-size: 13px; letter-spacing: .14em; }
+.tabs { gap: 6px; }
+.tab { font-family: var(--font-mono); font-size: 11px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--line); border-radius: 0; padding: 6px 12px; background: transparent; box-shadow: none; }
+.tab::before { content: "▸ "; color: var(--dim); }
+.tab:hover { color: var(--fg); background: transparent; border-color: var(--line-2); }
+.tab[aria-current="page"], .tab.active { color: var(--fg); background: var(--accent-bg); border-color: var(--accent); box-shadow: none; }
+.tab[aria-current="page"]::before, .tab.active::before { color: var(--accent); }
+.sync { font-size: 11px; letter-spacing: .04em; }
+.menu > summary, .icon-btn { border-radius: 0; }
+.menu-pop { border-radius: 0; background: var(--panel); box-shadow: 0 0 0 1px var(--line); }
+
+/* Titres de panneaux : capitales mono espacées, description dessous */
+h1 { font-family: var(--font-mono); font-size: clamp(26px, 5vw, 38px); letter-spacing: .04em; line-height: 1.1; }
+h2 { font-family: var(--font-mono); font-weight: 700; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; }
+.h2-row { margin-bottom: 14px; }
+.hint { font-size: 11px; color: var(--dim); letter-spacing: .04em; }
+.eyebrow, .kpi-l, .field label, dl.kv dt, .note small, .fsec, th { letter-spacing: .12em; }
+.kpi-l { font-size: 10px; color: var(--muted); }
+
+/* Panneaux : noirs, carrés, filet fin */
+.panel, details.trade, .plan, .empty, .split, .notice, .sample-warn, .dropzone, .thumb, .file, .empty-media, .note, input, select, textarea, .chip, .btn, .tagopt span, .filters button { border-radius: 0; }
+.panel { background: var(--panel); border-color: var(--line); padding: 18px 18px 20px; }
+details.trade, .plan { background: var(--panel); }
+.notice, .sample-warn { background: transparent; border: 1px solid var(--line); border-left: 2px solid var(--accent); font-size: 12px; }
+
+/* Cartes métriques : encadrées, séparées, valeur mono colorée */
+.kpis { gap: 10px; border: 0; background: transparent; overflow: visible; }
+.kpi, .kpi:last-child { border: 1px solid var(--line) !important; background: var(--panel); padding: 12px 14px 13px; }
+.kpi-v { font-family: var(--font-mono); font-weight: 600; font-size: 24px; letter-spacing: 0; color: var(--accent); }
+.kpi-v.pos { color: var(--win); } .kpi-v.neg { color: var(--loss); } .kpi-v.flat { color: var(--fg); }
+.kpi-s { font-size: 11px; color: var(--dim); }
+@media (max-width: 900px) { .kpi:nth-child(-n+3) { border-bottom: 1px solid var(--line); } }
+@media (max-width: 480px) { .kpi-v { font-size: 20px; } }
+.split { gap: 10px; border: 0; overflow: visible; }
+.split-cell { background: var(--panel); border: 1px solid var(--line); }
+.split-cell + .split-cell { border-left: 1px solid var(--line); }
+.split-v, .discipline b, .streaks b, .t-r b, .plan-title b, .empty h3 { font-family: var(--font-mono); letter-spacing: 0; }
+.split-v { font-size: 22px; }
+.discipline b, .streaks b { font-size: 17px; }
+.t-r b { font-size: 18px; }
+.plan-title b { font-size: 14px; letter-spacing: .1em; }
+.empty h3 { font-size: 14px; letter-spacing: .12em; }
+
+/* Boutons : encadrés, capitales, primaire violet */
+.btn { font: 500 11px var(--font-mono); letter-spacing: .1em; text-transform: uppercase; padding: 7px 12px; background: transparent; }
+.btn:hover { border-color: var(--line-2); }
+.btn.primary { background: var(--accent-bg); border-color: var(--accent); color: var(--fg); box-shadow: none; }
+.btn.primary:hover { background: color-mix(in srgb, var(--accent) 28%, var(--bg)); }
+.btn.small { font-size: 10.5px; padding: 5px 9px; }
+.filters button { font: 500 11px var(--font-mono); letter-spacing: .08em; text-transform: uppercase; padding: 6px 12px; }
+.filters button[aria-pressed="true"] { color: var(--fg); background: var(--accent-bg); border-color: var(--accent); }
+.tagopt span { font-size: 11px; }
+
+/* Bandeau d'outils : ligne de statut façon terminal */
+.tabpane > .toolbar:first-child { border: 1px solid var(--line); padding: 8px 10px; background: var(--panel); }
+.tabpane > .toolbar:first-child::before { content: none; }
+
+/* Graphiques et tableaux */
+.chart text { font-size: 9.5px; letter-spacing: .04em; }
+th { font-size: 10px; color: var(--muted); }
+td { font-size: 12px; }
+tr.hl td { background: var(--accent-bg); }
+.bar { border-radius: 0; height: 3px; background: var(--line); }
+.bar i { background: var(--accent); }
+.chip { font-size: 10px; letter-spacing: .06em; text-transform: uppercase; padding: 2px 7px; }
+.file .ext, .thumb .cap { border-radius: 0; }
+
+/* Formulaires */
+input, select, textarea { font: 12.5px var(--font-mono); background: var(--panel-2); }
+input:focus, select:focus, textarea:focus { outline: 1px solid var(--accent); }
+.drawer-panel { background: var(--bg); }
+.drawer-head, .formfoot { background: var(--bg); }
+
+/* Registre */
+details.trade > summary { padding-block: 10px; }
+details.trade:hover { border-color: var(--line-2); }
+.t-date, .t-clip { font-size: 11px; }
+@media (max-width: 480px) { .kpis .kpi:nth-child(n) { border: 1px solid var(--line) !important; } .tab::before { content: none; } }
