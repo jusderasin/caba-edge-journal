@@ -3,14 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#0d1117">
+<meta name="theme-color" content="#0a0f1a">
 <meta name="robots" content="noindex, nofollow">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Caba Journal">
 <title>Caba Edge Journal</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23000'/%3E%3Cpath d='M5 22 L12 15 L17 19 L27 8' stroke='%238f7bff' stroke-width='3' fill='none'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230a0f1a'/%3E%3Cpath d='M5 22 L12 15 L17 19 L27 8' stroke='%238f7bff' stroke-width='3' fill='none'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -34,7 +34,7 @@
 <div id="app" hidden>
   <header class="topbar">
     <div class="topbar-in">
-      <div class="brand"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">Caba Edge Journal</span></div>
+      <div class="brand"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">Caba Edge</span><span class="brand-sub">Desk privé</span></div>
       <nav class="tabs" aria-label="Sections">
         <a href="#journal" data-tab="journal" class="tab">Journal</a>
         <a href="#sessions" data-tab="sessions" class="tab">Sessions</a>
@@ -59,11 +59,14 @@
       </div>
     </div>
   </header>
+  <div class="ribbon" id="ribbon" aria-label="Horloges et fenêtres de session"></div>
+
 
   <main class="wrap">
 
     <!-- ===== JOURNAL ===== -->
     <section id="tab-journal" class="tabpane">
+      <header class="page-head"><h1 class="ph-title">Exécution réelle</h1><p class="ph-sub">Tes trades live, mesurés en R. Le backtest et la recherche n’entrent jamais dans ces chiffres.</p></header>
       <div class="toolbar">
         <div class="filters" role="group" aria-label="Filtrer par session">
           <button type="button" data-f="all" aria-pressed="true">Toutes</button>
@@ -138,8 +141,9 @@
 
     <!-- ===== SESSIONS ===== -->
     <section id="tab-sessions" class="tabpane" hidden>
+      <header class="page-head"><h1 class="ph-title">Gameplans</h1><p class="ph-sub">Un plan par session, avec ses fichiers : HTML, XML DeepCharts, PDF et captures. Les trades s’y rattachent.</p></header>
       <div class="toolbar">
-        <p class="lead">Un gameplan par session, avec ses fichiers (HTML, XML DeepCharts, PDF, captures). Les trades s'y rattachent.</p>
+        <span></span>
         <button type="button" class="btn primary" id="addPlanBtn">+ Session</button>
       </div>
       <div class="plans" id="plans"></div>
@@ -147,6 +151,7 @@
 
     <!-- ===== BACKTEST ===== -->
     <section id="tab-backtest" class="tabpane" hidden>
+      <header class="page-head"><h1 class="ph-title">Backtest</h1><p class="ph-sub">Replays de dates passées et paper trading, mesurés à part du live.</p></header>
       <div class="toolbar">
         <div class="filters" id="btFilters" role="group" aria-label="Filtrer le backtest">
           <button type="button" data-bf="all" aria-pressed="true">Tout</button>
@@ -182,6 +187,7 @@
 
     <!-- ===== RECHERCHE ===== -->
     <section id="tab-recherche" class="tabpane" hidden>
+      <header class="page-head"><h1 class="ph-title">Recherche</h1><p class="ph-sub">Résultats agrégés des replays et archive du GEX relevé avant chaque session.</p></header>
       <div class="notice"><b>Recherche ≠ journal.</b> Ces chiffres viennent du replay et des backtests. Ils n'entrent jamais dans les KPI réels et restent <span class="chip">low_n</span> tant que n &lt; 30.</div>
       <section class="panel">
         <div class="h2-row"><h2>Résultats de recherche</h2><span class="hint" id="researchHint"></span></div>
@@ -205,6 +211,10 @@
         </section>
       </div>
     </section>
+    <footer class="desk-foot">
+      <p>R calculé à l’affichage : (sortie − entrée) ÷ |entrée − stop initial|. Intervalle du win rate : Wilson 95 %. Intervalle de l’espérance : bootstrap, 2 000 tirages.</p>
+      <p>Sous 30 trades, un résultat reste un échantillon faible, pas un edge. Document privé, pas un conseil en investissement.</p>
+    </footer>
   </main>
 </div>
 
@@ -357,5 +367,6 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="config.js"></script>
 <script src="app.js"></script>
+<script src="desk.js"></script>
 </body>
 </html>
