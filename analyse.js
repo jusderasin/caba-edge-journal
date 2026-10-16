@@ -49,6 +49,7 @@
   }
 
   /* ---------- Heatmaps ---------- */
+  function plain(h) { return String(h).replace(/<[^>]*>/g, ""); }
   function heat(el, rows, cols, keyR, keyC, list) {
     var cells = {}, mx = 0.5;
     list.forEach(function (t) { var a = keyR(t), b = keyC(t); if (a == null || b == null) return; var k = a + "|" + b; (cells[k] = cells[k] || []).push(t); });
@@ -61,7 +62,7 @@
         var s = cells[r[0] + "|" + c[0]];
         if (!s) { h += '<span class="hm-c empty"></span>'; return; }
         var a = Math.min(1, Math.abs(s.exp) / mx), col = s.exp > 0.05 ? "var(--win)" : s.exp < -0.05 ? "var(--loss)" : "var(--be)";
-        h += '<span class="hm-c" style="--c:' + col + ";--a:" + (0.18 + a * 0.62).toFixed(2) + '" data-tip="' + r[1] + " · " + c[1] + "&#10;Esp. " + J.fmtR(s.exp) + " · WR " + J.pct(s.wr) + "&#10;Total " + J.fmtR(s.total) + " · n " + s.n + '"><b>' + J.fmtR(s.exp) + "</b><i>n " + s.n + "</i></span>";
+        h += '<span class="hm-c" style="--c:' + col + ";--a:" + (0.18 + a * 0.62).toFixed(2) + '" data-tip="' + J.esc(plain(r[1]) + " · " + plain(c[1])) + "&#10;Esp. " + J.fmtR(s.exp) + " · WR " + J.pct(s.wr) + "&#10;Total " + J.fmtR(s.total) + " · n " + s.n + '"><b>' + J.fmtR(s.exp) + "</b><i>n " + s.n + "</i></span>";
       });
     });
     $(el).innerHTML = h + "</div>";
