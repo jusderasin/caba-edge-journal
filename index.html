@@ -37,6 +37,7 @@
       <div class="brand"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">Caba Edge</span><span class="brand-sub">Desk privé</span></div>
       <nav class="tabs" aria-label="Sections">
         <a href="#journal" data-tab="journal" class="tab">Journal</a>
+        <a href="#analyse" data-tab="analyse" class="tab">Analyse</a>
         <a href="#sessions" data-tab="sessions" class="tab">Sessions</a>
         <a href="#backtest" data-tab="backtest" class="tab">Backtest</a>
         <a href="#recherche" data-tab="recherche" class="tab">Recherche</a>
@@ -67,6 +68,7 @@
     <!-- ===== JOURNAL ===== -->
     <section id="tab-journal" class="tabpane">
       <header class="page-head"><h1 class="ph-title">Exécution réelle</h1><p class="ph-sub">Tes trades live, mesurés en R. Le backtest et la recherche n’entrent jamais dans ces chiffres.</p></header>
+      <section class="perf-strip" id="perfStrip" aria-label="Performance du jour, de la semaine et du mois"></section>
       <div class="toolbar">
         <div class="filters" role="group" aria-label="Filtrer par session">
           <button type="button" data-f="all" aria-pressed="true">Toutes</button>
@@ -136,6 +138,46 @@
       <section>
         <div class="h2-row"><h2>Registre des trades</h2><span class="hint" id="ledgerHint"></span></div>
         <div class="ledger" id="ledger"></div>
+      </section>
+    </section>
+
+    <!-- ===== ANALYSE ===== -->
+    <section id="tab-analyse" class="tabpane" hidden>
+      <header class="page-head"><h1 class="ph-title">Analyse</h1><p class="ph-sub">Où est ton edge : par moment, par setup, par gestion. Calculé sur tes trades réels uniquement.</p></header>
+      <div class="toolbar">
+        <div class="filters" id="anFilters" role="group" aria-label="Filtrer l'analyse par session">
+          <button type="button" data-af="all" aria-pressed="true">Toutes</button>
+          <button type="button" data-af="Asian" aria-pressed="false">Asian</button>
+          <button type="button" data-af="London" aria-pressed="false">London</button>
+          <button type="button" data-af="NY" aria-pressed="false">NY</button>
+        </div>
+        <span class="hint" id="anHint"></span>
+      </div>
+      <div class="grid-2">
+        <section class="panel">
+          <div class="h2-row"><h2>Heatmap · jour × session</h2><span class="hint">espérance par trade · n</span></div>
+          <div id="hmDay"></div>
+        </section>
+        <section class="panel">
+          <div class="h2-row"><h2>Heatmap · heure × session</h2><span class="hint">heure de Guyane</span></div>
+          <div id="hmHour"></div>
+        </section>
+      </div>
+      <section class="panel">
+        <div class="h2-row"><h2>Edge par dimension</h2><label class="dimpick"><span class="hint">Découper par</span><select id="edgeDim"></select></label></div>
+        <div class="tbl-wrap" id="edgeTable"></div>
+        <p class="copy muted small-copy">Trié par R total. IC 95 % : Wilson pour le WR, bootstrap pour l'espérance. Une ligne <span class="chip lown">low_n</span> n'est pas un edge.</p>
+      </section>
+      <section class="panel">
+        <div class="h2-row"><h2>Simulateur de gestion</h2><span class="hint">rejoue tes trades réels avec d'autres règles</span></div>
+        <div class="sim-ctrl">
+          <label><span>TP fixe <b id="simTpV">2.0R</b></span><input type="range" id="simTp" min="0.5" max="4" step="0.25" value="2"></label>
+          <label><span>Break-even à <b id="simBeV">off</b></span><input type="range" id="simBe" min="0" max="2" step="0.25" value="0"></label>
+        </div>
+        <div class="sim-out" id="simOut"></div>
+        <svg class="chart" id="simChart" viewBox="0 0 600 180" preserveAspectRatio="none" role="img" aria-label="R cumulé réel contre simulé"></svg>
+        <div class="legend"><span><i class="lg dash"></i>réel</span><span><i class="lg acc"></i>simulé (bas → haut de la fourchette)</span></div>
+        <p class="copy muted small-copy">Basé sur le MFE / MAE de chaque trade. L'ordre des extrêmes n'est pas connu : quand le stop ou le BE a pu être touché avant le TP, le résultat est une fourchette, jamais un chiffre inventé. <b>Inconnu</b> = trade sorti avant d'atteindre le TP simulé : on ne sait pas où il serait allé, il est borné entre −1R et le TP.</p>
       </section>
     </section>
 
@@ -367,6 +409,8 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="config.js"></script>
 <script src="app.js"></script>
+<script src="analyse.js"></script>
 <script src="desk.js"></script>
+<script src="fx.js"></script>
 </body>
 </html>

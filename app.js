@@ -206,9 +206,17 @@
     var area = d + " L" + x(cum.length - 1).toFixed(1) + " " + y(0).toFixed(1) + " L" + x(0).toFixed(1) + " " + y(0).toFixed(1) + " Z";
     var last = cum[cum.length - 1], col = last >= 0 ? "var(--win)" : "var(--loss)";
     var peak = 0, dd = 0; cum.forEach(function (v) { peak = Math.max(peak, v); dd = Math.min(dd, v - peak); });
-    g += '<path d="' + area + '" fill="' + col + '" fill-opacity="0.12"/>';
-    g += '<path d="' + d + '" fill="none" stroke="' + col + '" stroke-width="2" vector-effect="non-scaling-stroke"/>';
-    cum.forEach(function (v, i) { if (i) g += '<circle cx="' + x(i) + '" cy="' + y(v) + '" r="' + (i === cum.length - 1 ? 4 : 2.2) + '" fill="' + (rs[i - 1] > 0.05 ? "var(--win)" : rs[i - 1] < -0.05 ? "var(--loss)" : "var(--be)") + '"/>'; });
+    var gid = "grad-" + svgId;
+    g += '<defs><linearGradient id="' + gid + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="' + col + '" stop-opacity=".32"/><stop offset="1" stop-color="' + col + '" stop-opacity="0"/></linearGradient></defs>';
+    g += '<path class="area" d="' + area + '" fill="url(#' + gid + ')"/>';
+    g += '<path class="draw glow" pathLength="1" d="' + d + '" fill="none" stroke="' + col + '" stroke-width="2.2" vector-effect="non-scaling-stroke"/>';
+    var tl = list.filter(function (t) { return computeR(t) != null; });
+    cum.forEach(function (v, i) {
+      if (!i) return;
+      var t = tl[i - 1] || {}, tipTxt = "Trade " + i + (t.date ? " · " + fmtDate(t.date) + (t.session ? " " + t.session : "") : "") + "&#10;" + fmtR(rs[i - 1]) + " · cumul " + fmtR(v) + (t.scenario ? "&#10;" + esc(t.scenario) : "");
+      g += '<circle class="pt' + (i === cum.length - 1 ? " last" : "") + '" style="--i:' + i + '" cx="' + x(i) + '" cy="' + y(v) + '" r="' + (i === cum.length - 1 ? 4 : 2.6) + '" fill="' + (rs[i - 1] > 0.05 ? "var(--win)" : rs[i - 1] < -0.05 ? "var(--loss)" : "var(--be)") + '"/>' +
+        '<circle cx="' + x(i) + '" cy="' + y(v) + '" r="10" fill="transparent" data-tip="' + tipTxt + '"/>';
+    });
     g += '<text x="' + P.l + '" y="' + (H - 6) + '">départ</text><text x="' + (W - P.r) + '" y="' + (H - 6) + '" text-anchor="end">trade ' + rs.length + "</text>";
     svg.innerHTML = g;
     $(hintId).textContent = "max drawdown " + fmtR(dd);
@@ -444,10 +452,14 @@
     }).join("") : '<div class="kpi-s">Aucun snapshot pour l\'instant.</div>';
   }
 
-  function renderAll() { groups = {}; renderJournal(); renderPlans(); renderBacktest(); renderResearch(); }
+  function renderAll() { groups = {}; renderJournal(); renderPlans(); renderBacktest(); renderResearch(); renderAnalyse(); }
+  /* Onglet Analyse (analyse.js) : lit les mêmes trades et les mêmes calculs, rien de plus. */
+  var api = { state: state, computeR: computeR, stats: stats, rsOf: rsOf, wilson: wilson, bootMean: bootMean, plannedRR: plannedRR,
+    riskPts: function (t) { return riskPts(t); }, byTime: byTime, fmtR: fmtR, pct: pct, cls: cls, esc: esc };
+  function renderAnalyse() { if (window.CabaAnalyse) window.CabaAnalyse.render(api); }
 
   /* ================= Onglets & filtres ================= */
-  var TABS = ["journal", "sessions", "backtest", "recherche"];
+  var TABS = ["journal", "analyse", "sessions", "backtest", "recherche"];
   function showTab() {
     var tab = (location.hash || "#journal").slice(1); if (TABS.indexOf(tab) < 0) tab = "journal";
     TABS.forEach(function (k) { $("tab-" + k).hidden = k !== tab; });
@@ -457,6 +469,7 @@
     var tab = (location.hash || "#journal").slice(1);
     if (tab === "journal") { var l = filtered(); renderCurve(l); renderDistribution(l); renderLab(l); }
     else if (tab === "backtest") renderCurve(btFiltered(), "btCurve", "btCurveHint");
+    else if (tab === "analyse") renderAnalyse();
   }
   window.addEventListener("hashchange", function () { showTab(); redrawCharts(); });
   var rz; window.addEventListener("resize", function () { clearTimeout(rz); rz = setTimeout(redrawCharts, 150); });
